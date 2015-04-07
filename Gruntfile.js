@@ -161,8 +161,8 @@ module.exports = function(grunt) {
 	grunt.option('config', 'production');
 
 	grunt.registerTask('build', ['copy', 'jade', 'sass', 'autoprefixer']);
-	grunt.registerTask('build-production' ['build', 'htmlmin', 'class-id-minifier']);
+	grunt.registerTask('build-production', ['build', 'htmlmin', 'class-id-minifier']);
 	grunt.registerTask('deploy', ['build-production', 'sftp:deploy']);
 	grunt.registerTask('default', ['build', 'connect', 'watch']);
-	
+
 };
