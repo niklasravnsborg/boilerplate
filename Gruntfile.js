@@ -14,7 +14,8 @@ module.exports = function(grunt) {
 
 		jade: {
 			options: {
-				pretty: true
+				pretty: true,
+				basedir: 'src/'
 			},
 			compile: {
 				files: [
