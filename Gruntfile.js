@@ -3,6 +3,12 @@ module.exports = function(grunt) {
 		pkg: grunt.file.readJSON('package.json'),
 		secret: grunt.file.readJSON('deploy_credentials.json'),
 
+		clean: {
+			build: {
+				src: 'dist/'
+			}
+		},
+
 		copy: {
 			main: {
 				expand: true,
@@ -147,6 +153,7 @@ module.exports = function(grunt) {
 		}
 	});
 
+	grunt.loadNpmTasks('grunt-contrib-clean');
 	grunt.loadNpmTasks('grunt-contrib-copy');
 	grunt.loadNpmTasks('grunt-contrib-jade');
 	grunt.loadNpmTasks('grunt-contrib-sass');
@@ -161,7 +168,7 @@ module.exports = function(grunt) {
 
 	grunt.option('config', 'production');
 
-	grunt.registerTask('build', ['copy', 'jade', 'sass', 'autoprefixer']);
+	grunt.registerTask('build', ['clean', 'copy', 'jade', 'sass', 'autoprefixer']);
 	grunt.registerTask('build-production', ['build', 'htmlmin', 'class-id-minifier']);
 	grunt.registerTask('deploy', ['build-production', 'sftp:deploy']);
 	grunt.registerTask('default', ['build', 'connect', 'watch']);
