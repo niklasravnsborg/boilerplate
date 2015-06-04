@@ -1,7 +1,14 @@
 module.exports = function(grunt) {
+
+	var deployFile = 'deploy_settings.json';
+
+	if (!grunt.file.exists(deployFile)) {
+		grunt.file.copy('deploy_settings_sample.json', deployFile);
+	}
+
 	grunt.initConfig({
 		pkg: grunt.file.readJSON('package.json'),
-		secret: grunt.file.readJSON('deploy_credentials.json'),
+		secret: grunt.file.readJSON(deployFile),
 
 		clean: {
 			build: {
@@ -142,7 +149,7 @@ module.exports = function(grunt) {
 					'./': ['dist/**', '!dist/assets/css/**.css.map', '!dist/map.js', '!dist/dev/map.js']
 				},
 				options: {
-					path: '/www/',
+					path: '<%= secret.dir %>',
 
 					srcBasePath: 'dist/',
 
