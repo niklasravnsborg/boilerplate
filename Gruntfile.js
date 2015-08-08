@@ -11,7 +11,7 @@ module.exports = function(grunt) {
 		secret: grunt.file.readJSON(deployFile),
 
 		clean: {
-			build: {
+			main: {
 				src: 'dist/'
 			}
 		},
@@ -30,7 +30,7 @@ module.exports = function(grunt) {
 				pretty: true,
 				basedir: 'src/'
 			},
-			compile: {
+			main: {
 				files: [
 					{
 						expand: true,
@@ -43,26 +43,8 @@ module.exports = function(grunt) {
 			}
 		},
 
-		htmlmin: {
-			dist: {
-				options: {
-					removeComments: true,
-					collapseWhitespace: true
-				},
-				files: [
-					{
-						expand: true,
-						cwd: 'dist/',
-						src: '**/*.html',
-						dest: 'dist/',
-						ext: '.html'
-					},
-				],
-			}
-		},
-
 		sass: {
-			dist: {
+			main: {
 				options: {
 					style: 'compressed'
 				},
@@ -72,34 +54,52 @@ module.exports = function(grunt) {
 			}
 		},
 
-		'class-id-minifier': {
-			simple: {
-				options: {
-					jsMapFile: 'dist/map.js',
-					jsMapDevFile: 'dist/map.dev.js'
-				},
+		autoprefixer: {
+			options: {
+				map: true
+			},
+			main: {
+				src: 'dist/assets/css/main.css'
+			}
+		},
+
+		htmlmin: {
+			options: {
+				removeComments: true,
+				collapseWhitespace: true
+			},
+			main: {
 				files: [
 					{
 						expand: true,
 						cwd: 'dist/',
-						src: '**/*.{html,css,js}',
+						src: '**/*.html',
+						dest: 'dist/',
+						ext: '.html'
+					}
+				]
+			}
+		},
+
+		'class-id-minifier': {
+			options: {
+				jsMapFile: 'dist/map.js',
+				jsMapDevFile: 'dist/map.dev.js'
+			},
+			main: {
+				files: [
+					{
+						expand: true,
+						cwd: 'dist/',
+						src: '**/*.{html,css}',
 						dest: 'dist/'
 					}
 				]
 			}
 		},
 
-		autoprefixer: {
-			no_dest: {
-				src: 'dist/assets/css/main.css'
-			},
-			options: {
-				map: true
-			}
-		},
-
 		connect: {
-			server: {
+			main: {
 				options: {
 					port: 4000,
 					base: 'dist/',
@@ -115,23 +115,23 @@ module.exports = function(grunt) {
 			},
 
 			html: {
-				files: ['src/**/*.html'],
-				tasks: ['copy']
+				files: 'src/**/*.html',
+				tasks: 'copy'
 			},
 
 			jade: {
-				files: ['src/**/*.jade'],
-				tasks: ['jade']
+				files: 'src/**/*.jade',
+				tasks: 'jade'
 			},
 
 			css: {
-				files: ['src/assets/css/**/*.sass', 'src/assets/css/**/*.scss'],
-				tasks: ['sass']
+				files: 'src/assets/css/**/*.{sass,scss}',
+				tasks: 'sass'
 			},
 
 			img: {
-				files: ['src/assets/img/**/*.jpg', 'src/assets/img/**/*.png'],
-				tasks: ['copy']
+				files: 'src/assets/img/**/*.{jpg,png}',
+				tasks: 'copy'
 			}
 		},
 
@@ -145,16 +145,14 @@ module.exports = function(grunt) {
 
 		sftp: {
 			deploy: {
-				files: {
-					'./': ['dist/**', '!dist/assets/css/**.css.map', '!dist/map.js', '!dist/dev/map.js']
-				},
 				options: {
 					path: '<%= secret.dir %>',
-
 					srcBasePath: 'dist/',
-
 					showProgress: true,
 					createDirectories: true
+				},
+				files: {
+					'./': ['dist/**', '!dist/assets/css/**.css.map']
 				}
 			}
 		}
