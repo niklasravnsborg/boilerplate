@@ -1,15 +1,13 @@
 module.exports = function(grunt) {
 
 	var deployFile = 'deploy_settings.json';
+	    deployInfo = {};
 
-	if (!grunt.file.exists(deployFile)) {
-		grunt.file.copy('deploy_settings_sample.json', deployFile);
+	if (grunt.file.exists(deployFile)) {
+		deployInfo = grunt.file.readJSON(deployFile);
 	}
 
 	grunt.initConfig({
-		pkg: grunt.file.readJSON('package.json'),
-		secret: grunt.file.readJSON(deployFile),
-
 		clean: {
 			main: {
 				src: 'dist/'
@@ -21,7 +19,7 @@ module.exports = function(grunt) {
 				expand: true,
 				cwd: 'src',
 				src: ['**', '!assets/css/**', '!**/*.jade'],
-				dest: 'dist/',
+				dest: 'dist/'
 			},
 		},
 
@@ -83,33 +81,6 @@ module.exports = function(grunt) {
 			}
 		},
 
-		'class-id-minifier': {
-			options: {
-				jsMapFile: 'dist/map.js',
-				jsMapDevFile: 'dist/map.dev.js'
-			},
-			main: {
-				files: [
-					{
-						expand: true,
-						cwd: 'dist/',
-						src: '**/*.{html,css}',
-						dest: 'dist/'
-					}
-				]
-			}
-		},
-
-		connect: {
-			main: {
-				options: {
-					port: 4000,
-					base: 'dist/',
-					keepalive: false
-				}
-			}
-		},
-
 		watch: {
 			options: {
 				livereload: true,
@@ -132,30 +103,27 @@ module.exports = function(grunt) {
 			},
 
 			img: {
-				files: 'src/assets/img/**/*.{jpg,png}',
+				files: 'src/assets/img/**/*.{jpg,png,svg}',
 				tasks: 'copy'
 			}
 		},
 
 		sshconfig: {
 			production: {
-				host: '<%= secret.host %>',
-				username: '<%= secret.username %>',
-				password: '<%= secret.password %>'
+				host:     '<%= deployInfo.host %>',
+				username: '<%= deployInfo.username %>',
+				password: '<%= deployInfo.password %>',
+				deployTo: '<%= deployInfo.deployTo %>'
 			}
 		},
 
-		sftp: {
-			deploy: {
-				options: {
-					path: '<%= secret.dir %>',
-					srcBasePath: 'dist/',
-					showProgress: true,
-					createDirectories: true
-				},
-				files: {
-					'./': ['dist/**', '!dist/assets/css/**.css.map']
-				}
+		syncdeploy: {
+			main: {
+				cwd: 'dist/',
+				src: ['**/*', '.htaccess']
+			},
+			options: {
+				removeEmpty: true
 			}
 		}
 	});
@@ -165,19 +133,16 @@ module.exports = function(grunt) {
 	grunt.loadNpmTasks('grunt-contrib-jade');
 	grunt.loadNpmTasks('grunt-contrib-sass');
 	grunt.loadNpmTasks('grunt-autoprefixer');
-
 	grunt.loadNpmTasks('grunt-contrib-htmlmin');
-	grunt.loadNpmTasks('grunt-class-id-minifier');
-
-	grunt.loadNpmTasks('grunt-contrib-connect');
 	grunt.loadNpmTasks('grunt-contrib-watch');
-	grunt.loadNpmTasks('grunt-ssh');
+	grunt.loadNpmTasks('grunt-sync-deploy');
 
 	grunt.option('config', 'production');
 
-	grunt.registerTask('build', ['clean', 'copy', 'jade', 'sass', 'autoprefixer']);
-	grunt.registerTask('build-production', ['build', 'htmlmin', 'class-id-minifier']);
-	grunt.registerTask('deploy', ['build-production', 'sftp:deploy']);
-	grunt.registerTask('default', ['build', 'connect', 'watch']);
+	grunt.registerTask('clean',      ['clean']);
+	grunt.registerTask('build',      ['copy', 'jade', 'sass', 'autoprefixer']);
+	grunt.registerTask('build-prod', ['build', 'htmlmin']);
+	grunt.registerTask('deploy',     ['build-prod', 'syncdeploy']);
+	grunt.registerTask('default',    ['build', 'watch']);
 
 };

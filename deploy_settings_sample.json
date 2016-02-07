@@ -2,5 +2,5 @@
 	"host":     "ssh.yourhost.com",
 	"username": "ssh_username",
 	"password": "ssh_password",
-	"dir":      "deploy/to/this/directory"
+	"deployTo": "deploy/to/this/directory"
 }
