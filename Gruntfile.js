@@ -16,10 +16,27 @@ module.exports = function(grunt) {
 
 		copy: {
 			main: {
-				expand: true,
-				cwd: 'src',
-				src: ['**', '!assets/css/**', '!**/*.jade'],
-				dest: 'dist/'
+				files: [
+					{
+						expand: true,
+						cwd: 'src/',
+						src: ['**', '.htaccess', '!_*/**', '!assets/css/**'],
+						dest: 'dist/'
+					},
+					{
+						expand: true,
+						cwd: 'src/_pages/',
+						src: '**/*.html',
+						dest: 'dist/',
+						rename: function(dest, src) {
+							if (src.indexOf('index.html') == -1) {
+								return dest + src.replace('.html', '/index.html');
+							} else {
+								return dest + src;
+							}
+						}
+					}
+				]
 			},
 		},
 
@@ -32,12 +49,19 @@ module.exports = function(grunt) {
 				files: [
 					{
 						expand: true,
-						cwd: 'src/',
+						cwd: 'src/_pages/',
 						src: '**/*.jade',
 						dest: 'dist/',
-						ext: '.html'
-					},
-				],
+						ext: '.html',
+						rename: function(dest, src) {
+							if (src.indexOf('index.html') == -1) {
+								return dest + src.replace('.html', '/index.html');
+							} else {
+								return dest + src;
+							}
+						}
+					}
+				]
 			}
 		},
 
