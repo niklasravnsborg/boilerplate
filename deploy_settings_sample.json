@@ -1,5 +1,6 @@
 {
 	"host":     "ssh.yourhost.com",
+	"port":     22,
 	"username": "ssh_username",
 	"password": "ssh_password",
 	"deployTo": "deploy/to/this/directory"

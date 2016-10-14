@@ -10,6 +10,6 @@
     "grunt-contrib-jade": "^0.14.1",
     "grunt-contrib-sass": "^0.8.1",
     "grunt-contrib-watch": "^0.6.1",
-    "grunt-sync-deploy": "^0.3.3"
+    "grunt-sync-deploy": "^0.4.3"
   }
 }
