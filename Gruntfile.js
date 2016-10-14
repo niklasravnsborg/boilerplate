@@ -40,7 +40,7 @@ module.exports = function(grunt) {
 			},
 		},
 
-		jade: {
+		pug: {
 			options: {
 				pretty: true,
 				basedir: 'src/'
@@ -50,7 +50,7 @@ module.exports = function(grunt) {
 					{
 						expand: true,
 						cwd: 'src/_pages/',
-						src: '**/*.jade',
+						src: '**/*.pug',
 						dest: 'dist/',
 						ext: '.html',
 						rename: function(dest, src) {
@@ -90,7 +90,8 @@ module.exports = function(grunt) {
 				removeComments: true,
 				collapseWhitespace: true,
 				minifyCSS: true,
-				minifyJS: true
+				minifyJS: true,
+				removeComments: false
 			},
 			main: {
 				files: [
@@ -105,6 +106,28 @@ module.exports = function(grunt) {
 			}
 		},
 
+		concat: {
+			main: {
+				options: {
+					sourceMap: true
+				},
+				src: 'src/assets/js/**/*.js',
+				dest: 'dist/assets/js/main.js',
+			}
+		},
+
+		uglify: {
+			main: {
+				options: {
+					compress: {
+						drop_console: true
+					}
+				},
+				src: 'dist/assets/js/main.js',
+				dest: 'dist/assets/js/main.js'
+			}
+		},
+
 		watch: {
 			options: {
 				livereload: true,
@@ -113,22 +136,32 @@ module.exports = function(grunt) {
 
 			html: {
 				files: 'src/**/*.html',
-				tasks: 'copy'
+				tasks: 'newer:copy'
 			},
 
-			jade: {
-				files: 'src/**/*.jade',
-				tasks: 'jade'
+			php: {
+				files: 'src/**/*.php',
+				tasks: 'newer:copy'
+			},
+
+			pug: {
+				files: 'src/**/*.pug',
+				tasks: 'pug'
 			},
 
 			css: {
 				files: 'src/assets/css/**/*.{sass,scss}',
-				tasks: 'sass'
+				tasks: ['sass', 'autoprefixer']
+			},
+
+			js: {
+				files: 'src/assets/js/**/*.js',
+				tasks: ['copy', 'concat']
 			},
 
 			img: {
 				files: 'src/assets/img/**/*.{jpg,png,svg}',
-				tasks: 'copy'
+				tasks: 'newer:copy'
 			}
 		},
 
@@ -155,18 +188,21 @@ module.exports = function(grunt) {
 
 	grunt.loadNpmTasks('grunt-contrib-clean');
 	grunt.loadNpmTasks('grunt-contrib-copy');
-	grunt.loadNpmTasks('grunt-contrib-jade');
+	grunt.loadNpmTasks('grunt-contrib-pug');
 	grunt.loadNpmTasks('grunt-contrib-sass');
 	grunt.loadNpmTasks('grunt-autoprefixer');
 	grunt.loadNpmTasks('grunt-contrib-htmlmin');
+	grunt.loadNpmTasks('grunt-contrib-concat');
+	grunt.loadNpmTasks('grunt-contrib-uglify');
 	grunt.loadNpmTasks('grunt-contrib-watch');
+	grunt.loadNpmTasks('grunt-newer');
 	grunt.loadNpmTasks('grunt-sync-deploy');
 
 	grunt.option('config', 'production');
 
-	grunt.registerTask('clean',      ['clean']);
-	grunt.registerTask('build',      ['copy', 'jade', 'sass', 'autoprefixer']);
-	grunt.registerTask('build-prod', ['build', 'htmlmin']);
+	grunt.registerTask('build',      ['newer:copy', 'newer:pug', 'newer:sass', 'newer:autoprefixer', 'newer:concat']);
+	grunt.registerTask('build-prod', ['build', 'newer:htmlmin', 'newer:uglify']);
+
 	grunt.registerTask('deploy',     ['build-prod', 'syncdeploy']);
 	grunt.registerTask('default',    ['build', 'watch']);
 
