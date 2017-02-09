@@ -134,13 +134,14 @@ module.exports = function(grunt) {
 				spawn: true
 			},
 
-			html: {
-				files: 'src/**/*.html',
-				tasks: 'newer:copy'
-			},
-
-			php: {
-				files: 'src/**/*.php',
+			copy: {
+				files: [
+					'src/favicon.ico',
+					'src/robots.txt',
+					'src/**/.htaccess',
+					'src/**/*.{html,php}',
+					'src/assets/img/**/*.{jpg,png,svg}'
+				],
 				tasks: 'newer:copy'
 			},
 
@@ -157,11 +158,6 @@ module.exports = function(grunt) {
 			js: {
 				files: 'src/assets/js/**/*.js',
 				tasks: ['copy', 'concat']
-			},
-
-			img: {
-				files: 'src/assets/img/**/*.{jpg,png,svg}',
-				tasks: 'newer:copy'
 			}
 		},
 

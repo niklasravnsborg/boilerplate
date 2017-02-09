@@ -7,7 +7,7 @@ RewriteCond %{HTTP_HOST} !\.(dev|local)$
 RewriteCond %{HTTP_HOST} !^www\.
 RewriteRule ^(.*)$ http://www.%{HTTP_HOST}/$1 [R=301,L]
 
-# redirect to non-http to https
-RewriteCond %{HTTP_HOST} !\.(dev|local)$
-RewriteCond %{HTTPS} !on
-RewriteRule (.*) https://%{HTTP_HOST}/$1 [R=301]
+# redirect non-http to https
+# RewriteCond %{HTTP_HOST} !\.(dev|local)$
+# RewriteCond %{HTTPS} !on
+# RewriteRule (.*) https://%{HTTP_HOST}/$1 [R=301]
